@@ -1,0 +1,380 @@
+/* =========================================
+   BASE
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f0e8;
+    color: #171717;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+/* =========================================
+   APP SHELL AND SCREENS
+========================================= */
+
+#app {
+    width: 100%;
+    max-width: 1100px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.screen {
+    display: none;
+    width: 100%;
+    text-align: center;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* =========================================
+   WELCOME
+========================================= */
+
+#welcome h1 {
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 0.9;
+    margin: 0 0 25px;
+    letter-spacing: -0.06em;
+}
+
+#welcome p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+.start-button {
+    border: none;
+    background: #171717;
+    color: white;
+    padding: 18px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 100px;
+    transition: transform 0.15s ease;
+}
+
+.start-button:hover {
+    transform: scale(1.05);
+}
+
+/* =========================================
+   CAMERA AND SETUP
+========================================= */
+
+.camera-container {
+    position: relative;
+    width: min(800px, 90vw);
+    margin: 0 auto 25px;
+    background: #111;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#video {
+    width: 100%;
+    display: block;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+#video.filter-bw {
+    filter: grayscale(1) sepia(0.1) contrast(1.28) brightness(0.9);
+}
+
+#film-grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='.55'/%3E%3C/svg%3E");
+    mix-blend-mode: soft-light;
+}
+
+#film-grain.active {
+    opacity: 0.13;
+    animation: grainJitter 0.24s steps(2) infinite;
+}
+
+@keyframes grainJitter {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(-1%, 1%);
+    }
+
+    50% {
+        transform: translate(1%, -1%);
+    }
+
+    75% {
+        transform: translate(1%, 1%);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+.setup-controls {
+    margin: 0 auto 24px;
+}
+
+.setup-controls h2 {
+    margin: 0 0 8px;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.setup-controls p {
+    margin: 0 auto 18px;
+}
+
+.filter-picker {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.filter-button {
+    border: 2px solid #171717;
+    background: transparent;
+    color: #171717;
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 0.04em;
+}
+
+.filter-button.active,
+.filter-button:hover {
+    background: #171717;
+    color: white;
+}
+
+#flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#flash.active {
+    animation: cameraFlash 0.35s ease;
+}
+
+@keyframes cameraFlash {
+    0% {
+        opacity: 0;
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+#countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: clamp(5rem, 18vw, 12rem);
+    font-weight: bold;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+}
+
+#countdown.show {
+    opacity: 1;
+}
+
+#photo-status {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.camera-help,
+.welcome-help {
+    max-width: 620px;
+    margin: 14px auto 0;
+    color: #5c554c;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.camera-help.error,
+.welcome-help.error {
+    color: #a33122;
+}
+
+/* =========================================
+   RESULTS
+========================================= */
+
+#results h2 {
+    font-size: 3rem;
+    margin-top: 0;
+}
+
+.strip-previews {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 50px;
+    margin: 40px auto;
+    flex-wrap: wrap;
+}
+
+.strip-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.strip-option h3 {
+    margin: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.strip-preview {
+    max-height: 500px;
+    max-width: 260px;
+    width: auto;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+    background: white;
+    outline: 1px solid #111111;
+    outline-offset: 0;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.button {
+    border: none;
+    padding: 14px 24px;
+    background: #171717;
+    color: white;
+    border-radius: 100px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: transform 0.15s ease;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+}
+
+.button.secondary {
+    background: transparent;
+    color: #171717;
+    border: 2px solid #171717;
+}
+
+.button.print {
+    background: #d94d35;
+}
+
+/* =========================================
+   HIDDEN OUTPUTS
+========================================= */
+
+canvas,
+#print-image {
+    display: none;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+    #app {
+        padding: 20px;
+    }
+
+    .strip-previews {
+        gap: 35px;
+    }
+
+    .strip-preview {
+        max-height: 400px;
+    }
+}
+
+/* =========================================
+   PRINTING
+========================================= */
+
+@media print {
+    body {
+        background: white;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    #print-image,
+    #print-image img {
+        visibility: visible;
+    }
+
+    #print-image {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        display: block !important;
+    }
+
+    #print-image img {
+        width: 100%;
+        height: auto;
+    }
+}
