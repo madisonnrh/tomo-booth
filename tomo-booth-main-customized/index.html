@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7e8d7">
+  <title>TomoBooth</title>
+  <link rel="stylesheet" href="https://use.typekit.net/fno0fri.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <section id="welcome" class="screen active" aria-labelledby="brand-title">
+      <h1 id="brand-title" class="sr-only">TomoBooth</h1>
+      <img class="brand-title" src="assets/title.svg" alt="">
+      <button class="art-button home-start" id="start-button" type="button">
+        <span class="artwork" aria-hidden="true"><img class="art-normal" src="assets/start-home.svg" alt=""><img class="art-hover" src="assets/start-home-inverted.svg" alt=""></span>
+        <span class="sr-only">Start TomoBooth</span>
+      </button>
+      <p id="welcome-help" class="help-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="camera-screen" class="screen" aria-label="Photo booth camera">
+      <div id="photo-status" hidden>PHOTO 1 OF 4</div>
+      <div class="camera-container">
+        <video id="video" autoplay muted playsinline></video>
+        <div id="film-grain" aria-hidden="true"></div>
+        <div id="countdown" aria-live="polite"></div>
+        <div id="flash" aria-hidden="true"></div>
+      </div>
+      <div id="setup-controls" class="setup-controls">
+        <div class="filter-picker" aria-label="Photo filter">
+          <span>COLOR</span>
+          <button id="filter-toggle" type="button" aria-label="Switch to black and white" aria-pressed="false"><img src="assets/toggle.svg" alt=""></button>
+          <span>B&amp;W</span>
+        </div>
+        <button class="art-button camera-start" id="ready-button" type="button">
+          <span class="artwork" aria-hidden="true"><img class="art-normal" src="assets/start-camera.svg" alt=""><img class="art-hover" src="assets/start-camera-inverted.svg" alt=""></span>
+          <span class="sr-only">Start taking photos</span>
+        </button>
+        <p id="setup-help" class="help-message" role="status" aria-live="polite"></p>
+      </div>
+      <p id="camera-help" class="help-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="results" class="screen" aria-labelledby="results-title">
+      <h2 id="results-title">YOUR PHOTOS</h2>
+      <div class="strip-previews">
+        <div class="strip-option">
+          <h3>1 × 4</h3>
+          <img id="strip-1x4" class="strip-preview" alt="Your 1 by 4 photo strip">
+          <button class="art-button result-button" id="download-1x4" type="button">
+            <span class="artwork" aria-hidden="true"><img class="art-normal" src="assets/download.svg" alt=""><img class="art-hover" src="assets/download-inverted.svg" alt=""></span>
+            <span class="sr-only">Download 1 by 4 strip</span>
+          </button>
+        </div>
+        <div class="strip-option">
+          <h3>2 × 4</h3>
+          <img id="strip-2x4" class="strip-preview" alt="Your 2 by 4 photo strips">
+          <div class="result-actions">
+            <button class="art-button result-button" id="download-2x4" type="button">
+              <span class="artwork" aria-hidden="true"><img class="art-normal" src="assets/download.svg" alt=""><img class="art-hover" src="assets/download-inverted.svg" alt=""></span>
+              <span class="sr-only">Download 2 by 4 strips</span>
+            </button>
+            <button class="art-button result-button print-button" id="print-2x4" type="button">
+              <span class="artwork" aria-hidden="true"><img class="art-normal" src="assets/print.svg" alt=""><img class="art-hover" src="assets/print-inverted.svg" alt=""></span>
+              <span class="sr-only">Print 2 by 4 strips</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button class="art-button restart-button" id="restart" type="button">
+        <span class="artwork" aria-hidden="true"><img class="art-normal" src="assets/restart.svg" alt=""><img class="art-hover" src="assets/restart-inverted.svg" alt=""></span>
+        <span class="sr-only">Start over</span>
+      </button>
+    </section>
+  </main>
+  <canvas id="photo-canvas"></canvas><canvas id="strip-canvas-1x4"></canvas><canvas id="strip-canvas-2x4"></canvas>
+  <div id="print-image"><img id="print-image-content" alt="Printable 2 by 4 strip"></div>
+  <script src="script.js"></script>
+</body>
+</html>
