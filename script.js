@@ -452,8 +452,8 @@ function makeStrip(canvas, width, height, columns) {
     var images;
     var photoWidth;
     var photoHeight;
-    var outerBorder = 5;
-    var divider = 14;
+    var outerBorder = 10;
+    var divider = 28;
 
     if (typeof columns === "undefined") {
         columns = 1;
@@ -498,8 +498,9 @@ function makeStrip(canvas, width, height, columns) {
 }
 
 function showResults() {
-    return makeStrip(canvas1x4, 300, 1200, 1).then(function (oneByFour) {
-        return makeStrip(canvas2x4, 600, 1200, 2).then(function (twoByFour) {
+    // 300 pixels per printed inch: one 2 x 6 strip, or two on 4 x 6 paper.
+    return makeStrip(canvas1x4, 600, 1800, 1).then(function (oneByFour) {
+        return makeStrip(canvas2x4, 1200, 1800, 2).then(function (twoByFour) {
             strip1x4.src = oneByFour;
             strip2x4.src = twoByFour;
             printImageContent.src = twoByFour;
