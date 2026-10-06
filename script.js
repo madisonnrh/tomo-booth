@@ -264,10 +264,10 @@ function applyAnalogBlackAndWhite(context, width, height) {
         );
         tone = tone * vignette + grain;
 
-        // A very light warm-brown print tone, not a full sepia effect.
-        pixels[index] = clampByte(tone * 1.035 + 3);
-        pixels[index + 1] = clampByte(tone * 1.005 + 1);
-        pixels[index + 2] = clampByte(tone * 0.955);
+        // Creamy highlights and softly brown shadows, like a warm analog print.
+        pixels[index] = clampByte(tone * 1.07 + 4);
+        pixels[index + 1] = clampByte(tone * 1.035 + 3);
+        pixels[index + 2] = clampByte(tone * 0.88 + 1);
     }
 
     context.putImageData(imageData, 0, 0);
