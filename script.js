@@ -265,9 +265,9 @@ function applyAnalogBlackAndWhite(context, width, height) {
         tone = tone * vignette + grain;
 
         // Creamy highlights and softly brown shadows, like a warm analog print.
-        pixels[index] = clampByte(tone * 1.07 + 4);
-        pixels[index + 1] = clampByte(tone * 1.035 + 3);
-        pixels[index + 2] = clampByte(tone * 0.88 + 1);
+        pixels[index] = clampByte(tone * 1.10 + 6);
+        pixels[index + 1] = clampByte(tone * 1.04 + 4);
+        pixels[index + 2] = clampByte(tone * 0.76 + 1);
     }
 
     context.putImageData(imageData, 0, 0);
