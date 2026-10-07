@@ -406,6 +406,54 @@ function applyAnalogColor(context, width, height) {
     }
 }
 
+function applySkinSmoothing(context, width, height) {
+    // Gentle color-guided, edge-preserving smoothing before film processing.
+    // This is an approximate skin-color mask, not facial reshaping or detection.
+    var image = context.getImageData(0, 0, width, height);
+    var source = new Uint8ClampedArray(image.data);
+    var output = image.data;
+    var radius = Math.max(2, Math.round(width / 350));
+    var x, y, i, dx, dy, nx, ny, j;
+    var red, green, blue, luma, cb, cr, mask;
+    var weight, total, sumRed, sumGreen, sumBlue, delta, blend;
+    function feather(value, low, high, margin) {
+        return Math.max(0, Math.min(1, (value - low) / margin, (high - value) / margin));
+    }
+    for (y = 0; y < height; y += 1) {
+        for (x = 0; x < width; x += 1) {
+            i = (y * width + x) * 4;
+            red = source[i]; green = source[i + 1]; blue = source[i + 2];
+            luma = red * 0.299 + green * 0.587 + blue * 0.114;
+            cb = 128 - red * 0.168736 - green * 0.331264 + blue * 0.5;
+            cr = 128 + red * 0.5 - green * 0.418688 - blue * 0.081312;
+            mask = feather(cb, 72, 140, 12) * feather(cr, 130, 184, 10) *
+                feather(luma, 20, 252, 25);
+            if (mask <= 0) { continue; }
+            total = 0; sumRed = 0; sumGreen = 0; sumBlue = 0;
+            for (dy = -1; dy <= 1; dy += 1) {
+                for (dx = -1; dx <= 1; dx += 1) {
+                    nx = Math.max(0, Math.min(width - 1, x + dx * radius));
+                    ny = Math.max(0, Math.min(height - 1, y + dy * radius));
+                    j = (ny * width + nx) * 4;
+                    delta = Math.abs(source[j] - red) + Math.abs(source[j + 1] - green) +
+                        Math.abs(source[j + 2] - blue);
+                    // High contrast neighbors contribute little across features.
+                    weight = Math.exp(-delta * delta / 1800) / (1 + dx * dx + dy * dy);
+                    total += weight;
+                    sumRed += source[j] * weight;
+                    sumGreen += source[j + 1] * weight;
+                    sumBlue += source[j + 2] * weight;
+                }
+            }
+            blend = 0.55 * mask;
+            output[i] = clampByte(red + (sumRed / total - red) * blend);
+            output[i + 1] = clampByte(green + (sumGreen / total - green) * blend);
+            output[i + 2] = clampByte(blue + (sumBlue / total - blue) * blend);
+        }
+    }
+    context.putImageData(image, 0, 0);
+}
+
 function capturePhoto() {
     var sourceWidth = video.videoWidth || 1280;
     var sourceHeight = video.videoHeight || 960;
@@ -432,6 +480,7 @@ function capturePhoto() {
         cropWidth, cropHeight, 0, 0, width, height);
     context.restore();
 
+    applySkinSmoothing(context, width, height);
     if (selectedFilter === "bw") {
         applyAnalogBlackAndWhite(context, width, height);
     } else {
