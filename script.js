@@ -407,8 +407,13 @@ function applyAnalogColor(context, width, height) {
 }
 
 function capturePhoto() {
-    var width = video.videoWidth || 1280;
-    var height = video.videoHeight || 960;
+    var sourceWidth = video.videoWidth || 1280;
+    var sourceHeight = video.videoHeight || 960;
+    // Match the preview's centered cover crop to each 580 x 424 print frame.
+    var cropWidth = Math.min(sourceWidth, sourceHeight * 580 / 424);
+    var cropHeight = cropWidth * 424 / 580;
+    var width = Math.round(cropWidth);
+    var height = Math.round(cropHeight);
     var context;
 
     photoCanvas.width = width;
@@ -422,7 +427,9 @@ function capturePhoto() {
     context.save();
     context.translate(width, 0);
     context.scale(-1, 1);
-    context.drawImage(video, 0, 0, width, height);
+    context.drawImage(video,
+        (sourceWidth - cropWidth) / 2, (sourceHeight - cropHeight) / 2,
+        cropWidth, cropHeight, 0, 0, width, height);
     context.restore();
 
     if (selectedFilter === "bw") {
@@ -737,6 +744,31 @@ function beginPhotoSession() {
 }
 
 function downloadImage(dataUrl, filename) {
+    // Construct the JPEG synchronously so share() retains the button's user
+    // activation on Safari. Do not fetch or await before opening the sheet.
+    var touchDevice = navigator.maxTouchPoints > 0;
+    if (touchDevice && navigator.share && navigator.canShare && typeof File !== "undefined") {
+        try {
+            var decoded = atob(dataUrl.split(",")[1]);
+            var bytes = new Uint8Array(decoded.length);
+            var i;
+            for (i = 0; i < decoded.length; i += 1) { bytes[i] = decoded.charCodeAt(i); }
+            var file = new File([bytes], filename, { type: "image/jpeg" });
+            if (navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file] }).catch(function (error) {
+                    // Canceling the sheet must not trigger an unwanted download.
+                    if (error.name !== "AbortError") { downloadFile(dataUrl, filename); }
+                });
+                return;
+            }
+        } catch (error) {
+            // Older browsers retain the ordinary JPEG download below.
+        }
+    }
+    downloadFile(dataUrl, filename);
+}
+
+function downloadFile(dataUrl, filename) {
     var link = document.createElement("a");
     link.href = dataUrl;
     link.download = filename;
